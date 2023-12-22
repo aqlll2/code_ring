@@ -149,7 +149,7 @@ result[k--] = nums[low] * nums[low];
 ```c++
 class Solution {
     public:
-    int minSubArrayLen(vector<int>& nums,int s){
+    int minSubArrayLen(vector<int>& nums,int target){
         int ans = INT32_MAX;
         int ret = 0;
         int left = 0;
@@ -169,7 +169,31 @@ class Solution {
 
 *注意* :要注意如何定义指针的起始和结束位置,定义一个滑动窗口的结束位置,使用while循环来判断当前的起始位置和当前窗口中的值的总和
 
-```C++
+```c++
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int right = 0;//右下标
+        int ans = INT32_MAX;
+        int ret = 0;
+        int sum = 0;//窗口总值
+        int left = 0;//左下标
+        for(right = 0;right < nums.size(); right++)
+        {
+            sum += nums[right];//计算窗口值 
+            while(sum >= target)//循环判断
+            {
+                ret = right - left + 1;//计算符合和数量
+                ans = ret < ans ? ret : ans;//判断下标值
+                sum -= nums[left++];//移动窗口
+            }
+        }
+        return ans == INT_MAX  ? 0 : ans;//返回
+    }
+};
 
 ```
 
+***总结*** : 滑动窗口是一个单循环完成的,其中的想法可以理解为==暴力算法的优化,再此算法中,节省了寻找左节点的过程中,使用了循环比较来节省空间的时间==, ~~并且根据不断变化的窗口中的数字的总和,来判断左移~~.
+
+>滑动窗口大概可以想成，是暴力搜索法的简化。在暴力搜索法中，我们依次尝试所有位置作为start的结果，但是滑动是简化了这个过程。比如刚开始，固定某一个start的，恰恰好找到刚刚>=target的end这个时候，现在我把start+1，我完全没必要再重新开始寻找end，因为我们减少了原本start位置的值，现在的[start+1:end]只是刚刚的子集罢了，最好的情况就是不用变化，这个旧的end也满足target，成为新的end，但是不可能end往前移动了，否则这个新的集合就变成[start+1:end-1]，如果这个满足target，那[start,end-1]也一定满足target，我们刚刚就不会找到这个end，而是留在end-1了，因此start+1的时候，只需要考了现在是否满足target，如果不满足，那end只需要往后移动。
